@@ -175,6 +175,13 @@ python build.py --name vWake                       # name only, default courses
 | `defi` | Decentralized Finance (DeFi): The Future of Finance |
 | `content-creation` (`tiktok`) | Content Creation for TikTok, YouTube, Instagram, Facebook |
 | `anatomy` | Anatomy |
+| `entrepreneurship` (`innovation`) | Innovation and entrepreneurship — *synthesized* from the reference screenshots (not in the original capture), rendered with the same markup so it's pixel-identical |
+
+Example — DevOps + Entrepreneurship, named "vwake":
+
+```bash
+python build.py --name vwake --course devops --course entrepreneurship
+```
 
 After rebuilding, just **hard-refresh** the page (`Ctrl+Shift+R`) — the running
 server reads files live.
@@ -218,8 +225,9 @@ logged-in account:
 - **Certificate *images*** (`capture/_res/*.bin`) have the original name and course
   baked into the pixels. `--name` / `--course` update every title, label and avatar,
   but the small cert *picture* still shows the captured text.
-- Only the **six captured specializations** can be shown. Anything else (e.g.
-  "Innovation and entrepreneurship") would need a fresh capture from an account
-  that has it.
+- Shows the **six captured specializations** plus **Innovation and
+  entrepreneurship**, which is *synthesized* from the reference screenshots
+  (cloned from a real 4-course block and relabeled, so it renders identically).
+  Any other specialization would need a fresh capture from an account that has it.
 - The cert is **self-signed** and trusted only on this machine for this purpose.
   Always run `teardown.py` when finished to restore normal `coursera.org` access.

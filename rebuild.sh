@@ -3,10 +3,10 @@
 # Pipeline: unpack tabs -> localize external assets -> apply demo edits.
 #
 # Feature flags (forwarded to customize.py):
-#   ./rebuild.sh --name vWake --course entrepreneurship   (entrepreneurship N/A)
+#   ./rebuild.sh --name vwake  --course devops --course entrepreneurship
 #   ./rebuild.sh --name Vivake --course devops --course fintech
 #   ./rebuild.sh --name Priya  --course defi --course anatomy
-# Available courses: devops | fintech | financial-services | defi | content-creation | anatomy
+# Courses: devops | fintech | financial-services | defi | content-creation | anatomy | entrepreneurship
 # (Re-capturing from the live site needs a fresh CAUTH; see grab.py / capture_tabs.py.)
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"

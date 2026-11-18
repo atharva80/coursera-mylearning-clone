@@ -30,7 +30,15 @@ SPEC_NAME = {
     'decentralized-finance-duke': 'Decentralized Finance (DeFi): The Future of Finance',
     'content-creation-tiktok-youtube-instagram-facebook': 'Content Creation for TikTok, YouTube, Instagram, Facebook',
     'anatomy': 'Anatomy',
+    'innovation-and-entrepreneurship': 'Innovation and entrepreneurship',
 }
+
+# Synthesized spec (not in the capture) — built from the reference screenshots.
+ENT_SLUG = 'innovation-and-entrepreneurship'
+ENT_COURSES = ['Entrepreneurial Mindset', 'Organizational innovation and creativity',
+               'Design and innovation of business model', 'Corporate Entrepreneurship']
+ENT_LEARN = ['entrepreneurial-mindset', 'organizational-innovation-creativity',
+             'business-model-innovation', 'corporate-entrepreneurship']
 COURSE_KEYWORDS = {
     'devops': 'devops-and-software-engineering', 'software-engineering': 'devops-and-software-engineering',
     'ibm-devops': 'devops-and-software-engineering', 'ibm': 'devops-and-software-engineering',
@@ -43,6 +51,9 @@ COURSE_KEYWORDS = {
     'content': 'content-creation-tiktok-youtube-instagram-facebook',
     'tiktok': 'content-creation-tiktok-youtube-instagram-facebook',
     'anatomy': 'anatomy',
+    'entrepreneurship': 'innovation-and-entrepreneurship',
+    'innovation': 'innovation-and-entrepreneurship',
+    'innovation-and-entrepreneurship': 'innovation-and-entrepreneurship',
 }
 
 CTA_HTML = (
@@ -68,6 +79,38 @@ def slug_of(mod):
 def cert_for(slug, idx):
     return {'devops-and-software-engineering': CERT_POOL[0],
             'fintech': CERT_POOL[1]}.get(slug, CERT_POOL[idx % len(CERT_POOL)])
+
+
+def synth_entrepreneurship(soup):
+    """Build the 'Innovation and entrepreneurship' spec by cloning a real 4-course
+    block and relabeling it (the capture doesn't contain this spec)."""
+    tmpl = next((m for m in soup.select('div.rc-PathwayCardModule')
+                 if slug_of(m) == 'fintech' and len(m.select('a[href*="/learn/"]')) == 4), None)
+    if tmpl is None:
+        tmpl = next((m for m in soup.select('div.rc-PathwayCardModule')
+                     if len(m.select('a[href*="/learn/"]')) == 4), None)
+    if tmpl is None:
+        return False
+    tslug = slug_of(tmpl)
+    tcourses = [a.get_text(strip=True) for a in tmpl.select('a[data-click-key*="course_card_link"]')]
+    tlearn = []
+    for s in re.findall(r'/learn/([a-z0-9-]+)/', str(tmpl)):
+        if s not in tlearn:
+            tlearn.append(s)
+
+    html = str(tmpl)
+    html = html.replace('/specializations/' + tslug, '/specializations/' + ENT_SLUG)
+    tname = SPEC_NAME.get(tslug, '')
+    if tname:
+        html = html.replace(tname, SPEC_NAME[ENT_SLUG])
+    for old, new in zip(tcourses[:4], ENT_COURSES):
+        html = html.replace(old, new)
+    for old, new in zip(tlearn[:4], ENT_LEARN):   # trailing slash avoids prefix clashes
+        html = html.replace('/learn/' + old + '/', '/learn/' + new + '/')
+
+    block = BeautifulSoup(html, 'html.parser').find('div', class_='rc-PathwayCardModule')
+    tmpl.insert_after(block)
+    return True
 
 
 def resolve_courses(args):
@@ -288,6 +331,9 @@ def main():
 
     ip_path = os.path.join(TABDIR, 'IN_PROGRESS.html')
     ip = BeautifulSoup(open(ip_path, encoding='utf-8', errors='replace').read(), 'lxml')
+    if ENT_SLUG in keep:
+        if synth_entrepreneurship(ip):
+            print("[+] synthesized 'Innovation and entrepreneurship' spec")
     kept = keep_specs_complete(ip, keep)
     fix_recent_certs(ip, [slug_of(m) for m in kept])
     update_stats(ip)
