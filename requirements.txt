@@ -1,0 +1,7 @@
+# Python deps for the Coursera My Learning demo clone.
+#   pip install -r requirements.txt
+beautifulsoup4>=4.12      # DOM surgery on the captured pages
+lxml>=5.0                 # fast HTML parser used by build/customize
+cryptography>=42.0        # OS-independent self-signed cert generation (gen_cert.py)
+websocket-client>=1.7     # CDP driver for (re)capturing live data (grab.py)
+Pillow>=10.0              # image handling (optional: screenshot cropping / cert art)

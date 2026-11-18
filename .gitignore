@@ -1,0 +1,36 @@
+# --- secrets: never commit a live session token ---
+.cookie
+
+# --- TLS material (regenerated per-machine by gen_cert.py / setup.py) ---
+cert.pem
+key.pem
+
+# --- generated site (rebuild with: python build.py) ---
+site/
+
+# --- capture working dirs & scratch ---
+capture/_profile*/
+capture/*.png
+capture/served_*.png
+capture/static_*.png
+
+# --- python / editor noise ---
+__pycache__/
+*.pyc
+.DS_Store
+.idea/
+.vscode/
+
+# Keep the source snapshots the build needs:
+!capture/
+!capture/tabs/
+!capture/tabs/*.mhtml
+!capture/my_learning.mhtml
+
+# capture artifacts (only the .mhtml snapshots are needed by the build)
+capture/tabs/*.png
+capture/my_learning.html
+capture/my_learning.png
+
+# reference screenshots (personal)
+ss/
