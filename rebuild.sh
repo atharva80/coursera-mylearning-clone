@@ -13,6 +13,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 rm -rf site
 python3 build_site.py          # mhtml -> site/tabs/*.html + shared /_res pool
 python3 localize_assets.py     # pull external imgs local, wire cert previews
+python3 build_certs.py         # render real certificate PDFs -> jpg/thumb/pdf + manifest
 python3 customize.py "$@"      # apply --name / --course flags, complete the specs
 echo
 echo "[done] clone rebuilt. If server.py is already running, just hard-refresh"

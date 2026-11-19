@@ -25,6 +25,7 @@ def run(script, extra=()):
 def main():
     run('build_site.py')
     run('localize_assets.py')
+    run('build_certs.py')               # render real certificate assets + manifest
     run('customize.py', sys.argv[1:])   # forward --name / --course
     print('\n[done] clone rebuilt in ./site')
     print('       If the server is already running, hard-refresh (Ctrl+Shift+R).')

@@ -47,11 +47,15 @@ coursera_clone/
 │
 ├── build_site.py             ← stage 1: unpack snapshots → site/tabs/*.html   ── pipeline
 ├── localize_assets.py        ← stage 2: pull external images local
-├── customize.py              ← stage 3: apply --name / --course, complete specs
+├── build_certs.py            ← stage 3: render real cert PDFs → jpg/thumb/pdf + manifest
+├── customize.py              ← stage 4: apply --name / --course, wire real certs, complete specs
 │
 ├── grab.py / capture_tabs.py ← (optional) re-capture fresh data with a CAUTH cookie
 │
 ├── capture/tabs/*.mhtml      ← the source snapshots the build reads
+├── certs/devops/*.pdf        ← your real IBM DevOps course + specialization certificates
+├── certs/fintech/*.pdf       ← your real U-Michigan FinTech course + specialization certificates
+├── certs/michigan.png        ← cropped U-Michigan partner logo
 ├── site/                     ← generated static site (git-ignored)
 ├── rebuild.sh                ← Linux/macOS shortcut for build.py
 │
@@ -169,8 +173,8 @@ python build.py --name vWake                       # name only, default courses
 
 | keyword | specialization |
 |---------|----------------|
-| `devops` | IBM DevOps and Software Engineering |
-| `fintech` | FinTech: Finance Industry Transformation and Regulation |
+| `devops` | IBM DevOps and Software Engineering — **your real certs** (15 courses + Professional Certificate) |
+| `fintech` | Financial Technology (Fintech) Innovations · University of Michigan — **your real certs** (4 courses + Specialization) |
 | `financial-services` (`finance`) | Digital Transformation in Financial Services |
 | `defi` | Decentralized Finance (DeFi): The Future of Finance |
 | `content-creation` (`tiktok`) | Content Creation for TikTok, YouTube, Instagram, Facebook |
@@ -187,6 +191,29 @@ After rebuilding, just **hard-refresh** the page (`Ctrl+Shift+R`) — the runnin
 server reads files live.
 
 ---
+
+## Real certificates
+
+Your actual Coursera certificate PDFs live in `certs/devops/` and `certs/fintech/`.
+`build_certs.py` renders each one into `site/_res/` as a full preview (`cert_*.jpg`),
+a thumbnail (`cert_*_t.jpg`) and a servable copy of the PDF (`cert_*.pdf`), and writes
+`site/_res/certs.json` mapping every course and specialization to its assets.
+
+`customize.py` then wires them in, **in course order**, so the clone shows your real
+credentials everywhere:
+
+- **In Progress / Completed** — every course row is marked *Complete* with its own
+  **Add to LinkedIn** + **View certificate**; *View certificate* opens that course's
+  real PDF in a new tab.
+- **Completed** — each specialization gets a "Congratulations … Professional Certificate"
+  banner whose preview and *View career certificate* button are your real spec cert.
+- **Certificates & Badges** — a **Specialization** section (your 2 Professional/Specialization
+  certs) + a **Course** section (all 19 course certs), each with its real thumbnail and links.
+- **Recent Certificates** sidebar — your two final specialization certs only.
+
+To swap in a different account's certificates: drop the PDFs into `certs/<name>/`, add a
+block to the `DEVOPS`/`FINTECH`-style tables in `build_certs.py` (title + file + month, in
+course order), and `python build.py`. Image-only cert PDFs are fine — they're rasterised.
 
 ## (Optional) Re-capture fresh data
 
@@ -220,14 +247,16 @@ logged-in account:
 ## Limitations
 
 - **Frozen snapshot**, not a live app. Tab navigation, the profile dropdown,
-  Add-to-LinkedIn and View-certificate work; search box, Resume buttons, "⋯"
-  menus and calendar arrows are inert (that logic lived in Coursera's stripped JS).
-- **Certificate *images*** (`capture/_res/*.bin`) have the original name and course
-  baked into the pixels. `--name` / `--course` update every title, label and avatar,
-  but the small cert *picture* still shows the captured text.
-- Shows the **six captured specializations** plus **Innovation and
-  entrepreneurship**, which is *synthesized* from the reference screenshots
-  (cloned from a real 4-course block and relabeled, so it renders identically).
-  Any other specialization would need a fresh capture from an account that has it.
+  Add-to-LinkedIn and View-certificate (opens the real PDF) work; search box, Resume
+  buttons, "⋯" menus and calendar arrows are inert (that logic lived in Coursera's JS).
+- **Certificates are the real PDFs** from `certs/`, rendered to previews and wired per
+  course. `--name` changes the greeting/avatars/profile text, but the certificate
+  *pictures* still show the name baked into your real PDFs (Atharva Bobde) — they're
+  scans of issued credentials, not regenerated.
+- Default build shows **IBM DevOps** + **Financial Technology (Fintech) Innovations**
+  (your real certs). The capture also contains four more specializations, and
+  **Innovation and entrepreneurship** is *synthesized* from the reference screenshots;
+  those render but have no real cert assets. Any other specialization needs a fresh
+  capture + its PDFs.
 - The cert is **self-signed** and trusted only on this machine for this purpose.
   Always run `teardown.py` when finished to restore normal `coursera.org` access.

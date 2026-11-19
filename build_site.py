@@ -47,16 +47,25 @@ NAV_SHIM = """
       +'&name='+encodeURIComponent(name||'Coursera Certificate')
       +'&organizationName='+encodeURIComponent('Coursera')+'&issueYear=2026&issueMonth=11','_blank','noopener');
   }
-  // View certificate -> open a placeholder cert image in a new tab
-  function viewCert(){ window.open('/_res/45a0d3d1d4b3d388.bin','_blank','noopener'); }
+  function realHref(el){
+    var a=el.closest&&el.closest('a[href]');
+    var h=a&&a.getAttribute('href');
+    return (h && h!=='#' && h.indexOf('javascript:')!==0) ? h : null;
+  }
+  // fallback only — real cert links carry their own href (wired by customize.py)
+  function viewCert(){ window.open('/_res/cert_devops_spec.pdf','_blank','noopener'); }
 
   document.addEventListener('click',function(e){
     var el=e.target;
     for(var i=0;i<6 && el;i++,el=el.parentElement){
       var txt=clean(el.textContent);
       if(MAP[txt]!==undefined){e.preventDefault();e.stopPropagation();go(MAP[txt]);return;}
-      if(/^Add to LinkedIn$/i.test(txt)){e.preventDefault();e.stopPropagation();linkedin(nearestTitle(el));return;}
-      if(/^View (career )?certificate$/i.test(txt)){e.preventDefault();e.stopPropagation();viewCert();return;}
+      if(/^Add to LinkedIn$/i.test(txt)){
+        if(realHref(el)) return;                 // real LinkedIn add link, let it open
+        e.preventDefault();e.stopPropagation();linkedin(nearestTitle(el));return;}
+      if(/^View (career )?certificate$/i.test(txt)){
+        if(realHref(el)) return;                 // real cert PDF link, let it open
+        e.preventDefault();e.stopPropagation();viewCert();return;}
     }
   },true);
 

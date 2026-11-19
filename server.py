@@ -28,8 +28,11 @@ if not os.path.exists(CERT):
 class Handler(SimpleHTTPRequestHandler):
     server_version = 'AkamaiGHost'
     sys_version = ''
-    # cert previews were captured with an ambiguous type and saved as .bin (JPEG)
-    extensions_map = {**SimpleHTTPRequestHandler.extensions_map, '.bin': 'image/jpeg'}
+    # cert previews were captured with an ambiguous type and saved as .bin (JPEG);
+    # real certificates are served as .jpg previews and .pdf downloads
+    extensions_map = {**SimpleHTTPRequestHandler.extensions_map,
+                      '.bin': 'image/jpeg', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
+                      '.pdf': 'application/pdf', '.json': 'application/json'}
 
     def __init__(self, *a, **k):
         super().__init__(*a, directory=os.path.join(HERE, 'site'), **k)
